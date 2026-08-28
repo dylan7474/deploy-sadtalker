@@ -11,6 +11,7 @@ echo "==> Checking prerequisites"
 command -v docker >/dev/null 2>&1 || { echo "ERROR: docker not found. Install Docker first."; exit 1; }
 docker compose version >/dev/null 2>&1 || { echo "ERROR: 'docker compose' (v2 plugin) not found."; exit 1; }
 command -v git >/dev/null 2>&1 || { echo "ERROR: git not found."; exit 1; }
+command -v curl >/dev/null 2>&1 || { echo "ERROR: curl not found."; exit 1; }
 
 if ! command -v nvidia-smi >/dev/null 2>&1; then
   echo "WARNING: nvidia-smi not found on host. Confirm your NVIDIA driver is installed."
