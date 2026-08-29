@@ -1,6 +1,7 @@
 # SadTalker API - local deployment
 # Source: https://github.com/yungang/sadtalker-api
-# Exposes host port 9090 -> container port 8000 (uvicorn)
+# Exposes host port 9091 -> container port 8000 (uvicorn)
+# (9090 is the Cockpit web UI default and is taken on this host)
 #
 # Usage:
 #   ./deploy-sadtalker.sh
@@ -9,38 +10,38 @@
 #   docker compose up -d
 
 services:
-  sadtalker:
-    build:
-      context: ./sadtalker-api
-      dockerfile: Dockerfile
-    image: sadtalker-api:local
-    container_name: sadtalker
-    restart: unless-stopped
-    ports:
-      - "9090:8000"
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-    env_file:
-      - ./sadtalker-api/.env
-    volumes:
-      # Mount a results dir if/once you confirm the exact output path used in api.py -
-      # not verified against the source, so treat this as a starting point.
-      - sadtalker-results:/sadtalker/results
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: ["gpu"]
-    healthcheck:
-      # container only has wget installed (no curl) - see Dockerfile
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8000/docs || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+sadtalker:
+build:
+context: ./sadtalker-api
+dockerfile: Dockerfile
+image: sadtalker-api:local
+container_name: sadtalker
+restart: unless-stopped
+ports:
+- "9091:8000"
+environment:
+- NVIDIA_VISIBLE_DEVICES=all
+- NVIDIA_DRIVER_CAPABILITIES=compute,utility
+env_file:
+- ./sadtalker-api/.env
+volumes:
+# Mount a results dir if/once you confirm the exact output path used in api.py -
+# not verified against the source, so treat this as a starting point.
+- sadtalker-results:/sadtalker/results
+deploy:
+resources:
+reservations:
+devices:
+- driver: nvidia
+count: 1
+capabilities: ["gpu"]
+healthcheck:
+# container only has wget installed (no curl) - see Dockerfile
+test: ["CMD-SHELL", "wget -q --spider http://localhost:8000/docs || exit 1"]
+interval: 30s
+timeout: 10s
+retries: 5
+start_period: 60s
 
 volumes:
-  sadtalker-results:
+sadtalker-results:
